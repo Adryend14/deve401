@@ -95,4 +95,15 @@ global with sharing class RestOnboarding
         return respuesta;
     }
 
+    global static void actualizarEstado(Case onboarding) {
+
+        if (onboarding.Seccion__c == '1') {
+            onboarding.Pasos__c = 'Datos Personales';
+        } else if (onboarding.Seccion__c == '2') {
+            onboarding.Pasos__c = 'Contrato';
+        } else if (onboarding.Seccion__c == '3') {
+            onboarding.Pasos__c = 'KYC';
+        }
+    }
+
 }
