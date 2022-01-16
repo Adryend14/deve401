@@ -1,10 +1,43 @@
 @RestResource(urlMapping='/Account/*')
 global with sharing class restAccount {
-   @HttpGET
-   global static list<Account> getAccount()
-   {
-       return [Select Id, Name, DNI__c, AccountNUmber From Account];
-   }
+   
+    @HttpGET
+
+    global static Account getAccount () {
+
+        String DNI = RestContext.request.params.get('dni');
+        String origen = RestContext.request.params.get('Origen');
+        String respuesta = '';
+        Account cuenta = new Account();
+        try {   
+            List<Case> onboardings = 
+                [SELECT DNI__c, Origen__c, Cuenta_referencia__c FROM Case WHERE (DNI__c = :DNI)];
+            Id idCuenta = onboardings[0].Cuenta_referencia__c;
+            cuenta = [SELECT Name, Active__c, DNI__c, Phone FROM Account WHERE id = :idCuenta LIMIT 1];
+            ONB_phone__c phone = [SELECT PersonMobilePhone__c FROM ONB_phone__c WHERE (Account__c = :idCuenta)];
+
+            if (origen != onboardings[0].Origen__c) {
+
+                Case onboarding = new Case();
+                onboarding.Cuenta_referencia__c = onboardings[0].Cuenta_referencia__c;
+
+                insert onboarding;
+
+                String pasos = '';
+                String camposCambian = 'Case: Cuenta_referencia__c';
+                String oldValues = '';
+                String newValues = '' + onboarding.Cuenta_referencia__c;
+                String origenCambio = 'Insert Case';
+                ManejoTrazabilidad.actualizarTrazabilidad('', camposCambian, false, newValues, oldValues, origenCambio, pasos, false);
+            }
+            
+        } catch(Exception e) {
+
+            ManejoErrores.registrarError(e);
+        }
+
+        return cuenta;
+    }
 
    @HttpPost
    global static string postAccount(String DNI, String nombre) {
