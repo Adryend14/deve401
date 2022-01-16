@@ -3,6 +3,8 @@ global with sharing class RestOnboarding
 {
     @HttpPATCH
 
+    @HttpPATCH
+
     global static string patchDatosPersonales(String email, String telefono, String DNI, boolean advertisingShipping, boolean privacyPolicy) {
 
         Date fecha = Date.Today();
@@ -10,7 +12,7 @@ global with sharing class RestOnboarding
 
         try
         {
-            List<Case> onboardings = [SELECT DNI__c, Pasos__c, Landing_Version__c,
+            List<Case> onboardings = [SELECT Id, DNI__c, Pasos__c, Landing_Version__c,
             Legal_Documents_Version__c, ID__c, PersonEmail__c, I_Accept_the_Privacy_Policy__c, Privacy_Policy_Date__c,
             Transfer_of_data__c, Transfer_of_data_date__c, I_do_not_accept_advertising_shipping__c, Advertising_shipping_date__c,
             New_Conditions_Data_Use__c, New_Conditions_Data_Use_date__c, DNI_Validation__c, No_Entity_Information_Sources_date__c,

@@ -1,9 +1,9 @@
-@RestResource(urlMapping='/ONB_contract__c/*')
+RestResource(urlMapping='/ONB_contract__c/*')
 global with sharing class RestContrato {
     
     @HttpPATCH
 
-    global static String patchContract (String DNI, String tipoContrato, String civil_status) {
+    global static String patchContract (String DNI, String tipoContrato, String civil_status, String OptIn) {
 
         Case onboarding = [SELECT Id, Cuenta_referencia__c, Seccion__c FROM Case WHERE DNI__c = :DNI];
         List<ONB_contract__c> contratos = 
@@ -35,9 +35,10 @@ global with sharing class RestContrato {
         } else if (tipoContrato == 'KYC') {
             contrato.Civil_Status__c = civil_status;
             contrato.Tipo_contrato__c = 'KYC';
+            contrato.OptIn_Code__c = OptIn;
             pasos = 'KYC';
-            camposCambian = 'ONB_contract__c: Civil_Status__c, Tipo_contrato__c';
-            oldValues = contrato.Civil_Status__c + ', ' + contrato.Tipo_contrato__c;            
+            camposCambian = 'ONB_contract__c: Civil_Status__c, Tipo_contrato__c, OptIn_Code__c';
+            oldValues = contrato.Civil_Status__c + ', ' + contrato.Tipo_contrato__c + ', ' + contrato.OptIn_Code__c;            
             origenCambio = 'PATCH ONB_contract__c';
         }
 
@@ -53,7 +54,7 @@ global with sharing class RestContrato {
                     newValues = contrato.Contract_downloaded__c + ', ' + contrato.Contract_down_date__c + ', ' +
                         contrato.Iaccepttheinformationpriorofcontracting__c + ', ' + contrato.Tipo_contrato__c;
                 } else {
-                    newValues = '' + contrato.Civil_Status__c + ', ' + contrato.Tipo_contrato__c;
+                    newValues = contrato.Civil_Status__c + ', ' + contrato.Tipo_contrato__c + ', ' + contrato.OptIn_Code__c;
                 }
 
                 ManejoTrazabilidad.actualizarTrazabilidad('', camposCambian, false, newValues, oldValues, origenCambio, pasos, false);
@@ -82,3 +83,4 @@ global with sharing class RestContrato {
 
     }
 }
+
